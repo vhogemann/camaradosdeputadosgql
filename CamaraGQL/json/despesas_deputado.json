@@ -1,0 +1,23 @@
+{
+  "dados": [
+    {
+      "ano": 23558423,
+      "cnpjCpfFornecedor": "laborum reprehenderit consectetur magna",
+      "codDocumento": -78076622,
+      "codLote": 42688630,
+      "codTipoDocumento": 34525328,
+      "dataDocumento": "commodo do veniam nisi",
+      "mes": -35339988,
+      "nomeFornecedor": "proident exercitation dolore ex",
+      "numDocumento": "commo",
+      "numRessarcimento": "cupidatat dolor",
+      "parcela": 25364678,
+      "tipoDespesa": "veniam irure sed amet ex",
+      "tipoDocumento": "aute",
+      "urlDocumento": "dolor pariatur",
+      "valorDocumento": 27579948.261222586,
+      "valorGlosa": -4566787.875514239,
+      "valorLiquido": -17212218.59413533
+    }
+  ]
+}
