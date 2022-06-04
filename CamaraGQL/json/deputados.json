@@ -1,0 +1,38 @@
+{
+  "dados": [
+    {
+      "email": "ut",
+      "id": 15678459,
+      "idLegislatura": -7217374,
+      "nome": "qui dolor eu",
+      "siglaPartido": "dolor aliqua ad pariatur",
+      "siglaUf": "magna consequat in dolore amet",
+      "uri": "dolore Excepteur",
+      "uriPartido": "aute",
+      "urlFoto": "occaecat in"
+    },
+    {
+      "email": "magna anim irure",
+      "id": -58027760,
+      "idLegislatura": -59933420,
+      "nome": "sint id",
+      "siglaPartido": "consectetur fugiat",
+      "siglaUf": "dolore Ut magna",
+      "uri": "fugiat",
+      "uriPartido": "veniam commodo",
+      "urlFoto": "officia nulla"
+    }
+  ],
+  "links": [
+    {
+      "href": "consequat culpa dolore do in",
+      "rel": "ad labore sit",
+      "type": "Lorem occaecat"
+    },
+    {
+      "href": "deserunt est",
+      "rel": "ut",
+      "type": "dolore nostrud dolor ullamco"
+    }
+  ]
+}

@@ -6,8 +6,8 @@ open Microsoft.Extensions.DependencyInjection
 [<EntryPoint>]
 let main args =
     let builder = WebApplication.CreateBuilder(args)
-    
-    builder.Services.AddGraphQLServer().AddQueryType<Camara.Schema.Query>() |> ignore
+    builder.Services    
+        .AddGraphQLServer().AddQueryType<Camara.Schema.Query>() |> ignore
     
     let app = builder.Build()
 

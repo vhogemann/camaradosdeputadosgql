@@ -1,0 +1,55 @@
+{
+  "dados": {
+    "cpf": "commodo do nostrud qui irure",
+    "dataFalecimento": "do in esse",
+    "dataNascimento": "aute commodo Duis pariatur qui",
+    "escolaridade": "dol",
+    "id": 33210100,
+    "municipioNascimento": "aliquip est pariatur",
+    "nomeCivil": "Ut pariatur",
+    "redeSocial": [
+      "cillum dolor",
+      "amet aute"
+    ],
+    "sexo": "amet mollit aute",
+    "ufNascimento": "labore consectetur culpa",
+    "ultimoStatus": {
+      "condicaoEleitoral": "Ut velit tempor adipisicing",
+      "data": "anim",
+      "descricaoStatus": "aliquip nisi proident oc",
+      "email": "qui aute esse dolor dolore",
+      "gabinete": {
+        "andar": "sint nisi in",
+        "email": "et nisi laboris",
+        "nome": "laboris pariatur sint consequat",
+        "predio": "minim pariatur sed tempor",
+        "sala": "aliquip fugiat ipsum",
+        "telefone": "occaecat in fugiat"
+      },
+      "id": -78929535,
+      "idLegislatura": -85749557,
+      "nome": "est",
+      "nomeEleitoral": "deserunt aliquip Duis eiusmod",
+      "siglaPartido": "exercitation deserunt officia consequat",
+      "siglaUf": "nostrud ",
+      "situacao": "ipsum incididunt",
+      "uri": "tempor ut",
+      "uriPartido": "velit quis laboris do labore",
+      "urlFoto": "Duis sit reprehenderit"
+    },
+    "uri": "deserunt aliqua",
+    "urlWebsite": "qui"
+  },
+  "links": [
+    {
+      "href": "sit commodo",
+      "rel": "sint",
+      "type": "nisi dolore tempor cupidatat"
+    },
+    {
+      "href": "non velit",
+      "rel": "cillum ullamco dolo",
+      "type": "voluptate des"
+    }
+  ]
+}
