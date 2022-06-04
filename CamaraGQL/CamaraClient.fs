@@ -10,10 +10,14 @@ type DeputyExpenseResponse = JsonProvider<"json/despesas_deputado.json">
 let baseUrl = "https://dadosabertos.camara.leg.br/api/v2"
 
 // ?id=&nome=&idLegislatura=-37226838&idLegislatura=20933510&siglaUf=velit Ut elit&siglaUf=esse ipsum ullamco voluptate&siglaPartido=velit Ut elit&siglaPartido=esse ipsum ullamco voluptate&siglaSexo=nulla sunt Lorem magna&pagina=41719264&itens=41719264&dataInicio=nulla sunt Lorem magna&dataFim=nulla sunt Lorem magna&ordem=ASC&ordenarPor=nome
-let DeputyList (state: string) (party: string) =
+let DeputyList (id:Nullable<int>) (name:string) (state: string) (party: string) =
     task {
         let query =
             seq {
+                if id.HasValue then
+                    yield "id",  $"{id.Value}"
+                if name <> null then
+                    yield "nome", name
                 if state <> null then
                     yield "siglaUf", state
 

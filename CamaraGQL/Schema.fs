@@ -55,8 +55,8 @@ and DeputyExpenses(data: RestAPI.DeputyExpenseResponse.Dado) =
     member val OverExpenseValue = data.ValorGlosa
     member val NetValue = data.ValorLiquido
 type Query() =
-    member _.Deputies(state: string, party: string) =
+    member _.Deputies(id: Nullable<int>, name: string, state: string, party: string) =
         task {
-            let! response = RestAPI.DeputyList state party
+            let! response = RestAPI.DeputyList id name state party
             return response |> Seq.map Deputy
         }
