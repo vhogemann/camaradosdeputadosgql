@@ -6,6 +6,7 @@
     <Compile Include="CamaraClient.fs" />
     <Compile Include="Schema.fs" />
     <Compile Include="Program.fs" />
+    <None Include="ClientTest.fsx" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="FSharp.Data" Version="4.2.8" />

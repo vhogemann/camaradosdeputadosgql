@@ -1,7 +1,6 @@
 module Camara.Schema
 
 open System
-open System.Dynamic
 open HotChocolate
 
 type Deputy(data: RestAPI.DeputyListResponse.Dado) =
@@ -16,15 +15,14 @@ type Deputy(data: RestAPI.DeputyListResponse.Dado) =
             let! response = RestAPI.DeputyDetails deputy.Id
             return response.Dados |> DeputyDetails
         }
-        
+
     member _.GetExpenses([<Parent>] deputy: Deputy, year) =
         task {
             let! response = RestAPI.DeputyExpenses deputy.Id year
-            
+
             return
                 if response <> null then
-                    response
-                    |> Seq.map DeputyExpenses
+                    response |> Seq.map DeputyExpenses
                 else
                     Seq.empty
         }
@@ -40,8 +38,8 @@ and DeputyDetails(data: RestAPI.DeputyDetailsResponse.Dados) =
     member val SocialNetworks = data.RedeSocial
 
 and DeputyExpenses(data: RestAPI.DeputyExpenseResponse.Dado) =
-    member val Year = data.Ano with get
-    member val SupplierCnpjOrCpf = data.CnpjCpfFornecedor with get
+    member val Year = data.Ano
+    member val SupplierCnpjOrCpf = data.CnpjCpfFornecedor
     member val DocumentCode = data.CodDocumento
     member val BatchCode = data.CodLote
     member val DocumentDate = data.DataDocumento
@@ -54,9 +52,27 @@ and DeputyExpenses(data: RestAPI.DeputyExpenseResponse.Dado) =
     member val DocumentValue = data.ValorDocumento
     member val OverExpenseValue = data.ValorGlosa
     member val NetValue = data.ValorLiquido
-type Query() =
-    member _.Deputies(id: Nullable<int>, name: string, state: string, party: string) =
+
+type Legislature(data: RestAPI.LegislatureListResponse.Dado) =
+    member val Id = data.Id
+    member val Start = data.DataInicio
+    member val End = data.DataFim
+
+    member _.GetDeputies([<Parent>] legislature: Legislature) =
         task {
-            let! response = RestAPI.DeputyList id name state party
+            let! response = RestAPI.DeputyList (Nullable()) (null) (null) (null) (Nullable legislature.Id)
             return response |> Seq.map Deputy
+        }
+
+type CamaraQuery() =
+    member _.Deputies(id: Nullable<int>, name: string, state: string, party: string, legislature: Nullable<int>) =
+        task {
+            let! response = RestAPI.DeputyList id name state party legislature
+            return response |> Seq.map Deputy
+        }
+
+    member _.Legislatures(id: Nullable<int>) =
+        task {
+            let! response = RestAPI.Legislatures id
+            return response |> Seq.map Legislature
         }
