@@ -39,6 +39,7 @@ and DeputyDetails(data: RestAPI.DeputyDetailsResponse.Dados) =
 
 and DeputyExpenses(data: RestAPI.DeputyExpenseResponse.Dado) =
     member val Year = data.Ano
+    member val SupplierName = data.NomeFornecedor
     member val SupplierCnpjOrCpf = data.CnpjCpfFornecedor
     member val DocumentCode = data.CodDocumento
     member val BatchCode = data.CodLote
@@ -52,7 +53,14 @@ and DeputyExpenses(data: RestAPI.DeputyExpenseResponse.Dado) =
     member val DocumentValue = data.ValorDocumento
     member val OverExpenseValue = data.ValorGlosa
     member val NetValue = data.ValorLiquido
-
+    member _.GetSupplier ([<Parent>] expense:DeputyExpenses) =
+        task {
+            let! response = CnpjWs.RestApi.GetCnpj (expense.SupplierCnpjOrCpf)
+            return response |> Supplier
+        }
+and Supplier (data:CnpjWs.RestApi.CnpjResponse.Root) =
+    member val Name = data.RazaoSocial
+    member val UpdatedAt = data.AtualizadoEm
 type Legislature(data: RestAPI.LegislatureListResponse.Dado) =
     member val Id = data.Id
     member val Start = data.DataInicio

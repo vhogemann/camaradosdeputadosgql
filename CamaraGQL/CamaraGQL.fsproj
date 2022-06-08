@@ -3,10 +3,13 @@
     <TargetFramework>net6.0</TargetFramework>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="CnpjWsClient.fs" />
     <Compile Include="CamaraClient.fs" />
     <Compile Include="Schema.fs" />
     <Compile Include="Program.fs" />
     <None Include="ClientTest.fsx" />
+    <None Include="receita\download_database.fsx" />
+    <Folder Include="receita\datasets" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="FSharp.Data" Version="4.2.8" />
