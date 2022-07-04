@@ -19,6 +19,5 @@
   <ItemGroup>
     <Content Include=".dockerignore" />
     <Content Include="Dockerfile" />
-    <Content Include="heroku.yaml" />
   </ItemGroup>
 </Project>

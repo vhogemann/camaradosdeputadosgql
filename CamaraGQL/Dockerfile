@@ -5,7 +5,7 @@ EXPOSE 443
 
 FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
 WORKDIR /src
-COPY ["CamaraGQL/CamaraGQL.fsproj", "CamaraGQL/"]
+COPY ["CamaraGQL.fsproj", "CamaraGQL/"]
 RUN dotnet restore "CamaraGQL/CamaraGQL.fsproj"
 COPY . .
 WORKDIR "/src/CamaraGQL"
