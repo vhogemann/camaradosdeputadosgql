@@ -2,13 +2,14 @@ module Camara.Schema
 
 open System
 open HotChocolate
+open Microsoft.Extensions.Logging
 
 type Deputy(data: RestAPI.DeputyListResponse.Dado) =
-    member val Id = data.Id
-    member val Name = data.Nome
-    member val State = data.SiglaUf
-    member val Party = data.SiglaPartido
-    member val Picture = data.UrlFoto
+    member val Id: int = data.Id
+    member val Name: string = data.Nome
+    member val State: string = data.SiglaUf
+    member val Party: string = data.SiglaPartido
+    member val Picture: string = data.UrlFoto
 
     member _.GetDetails([<Parent>] deputy: Deputy) =
         task {
@@ -16,71 +17,76 @@ type Deputy(data: RestAPI.DeputyListResponse.Dado) =
             return response.Dados |> DeputyDetails
         }
 
-    member _.GetExpenses([<Parent>] deputy: Deputy, year) =
+    member _.GetExpenses([<Parent>] deputy: Deputy, year, month) =
         task {
-            let! response = RestAPI.DeputyExpenses deputy.Id year
-
-            return
-                if response <> null then
-                    response |> Seq.map DeputyExpenses
-                else
-                    Seq.empty
+            let! response = RestAPI.DeputyExpenses deputy.Id year month
+            return response |> Seq.map DeputyExpenses |> Seq.toArray
         }
 
 and DeputyDetails(data: RestAPI.DeputyDetailsResponse.Dados) =
-    member val Id = data.Id
-    member val FullName = data.NomeCivil
-    member val Cpf = data.Cpf
-    member val Education = data.Escolaridade
-    member val Gender = data.Sexo
-    member val BirthDate = data.DataNascimento
-    member val DeathDate = data.DataFalecimento
-    member val SocialNetworks = data.RedeSocial
+    member val Id: int = data.Id
+    member val FullName: string = data.NomeCivil
+    member val Cpf: string = data.Cpf
+    member val Education: string = data.Escolaridade
+    member val Gender: string = data.Sexo
+    member val BirthDate: string = data.DataNascimento
+    member val DeathDate: string = data.DataFalecimento
+    member val SocialNetworks: string [] = data.RedeSocial
 
 and DeputyExpenses(data: RestAPI.DeputyExpenseResponse.Dado) =
-    member val Year = data.Ano
-    member val SupplierName = data.NomeFornecedor
-    member val SupplierCnpjOrCpf = data.CnpjCpfFornecedor
-    member val DocumentCode = data.CodDocumento
-    member val BatchCode = data.CodLote
-    member val DocumentDate = data.DataDocumento
-    member val DocumentNumber = data.NumDocumento
-    member val ReimbursementNumber = data.NumRessarcimento
-    member val InstallmentNumber = data.Parcela
-    member val ExpenseType = data.TipoDespesa
-    member val DocumentType = data.TipoDocumento
-    member val DocumentTypeCode = data.CodTipoDocumento
-    member val DocumentValue = data.ValorDocumento
-    member val OverExpenseValue = data.ValorGlosa
-    member val NetValue = data.ValorLiquido
-    member _.GetSupplier ([<Parent>] expense:DeputyExpenses) =
-        task {
-            let! response = CnpjWs.RestApi.GetCnpj (expense.SupplierCnpjOrCpf)
-            return response |> Supplier
-        }
-and Supplier (data:CnpjWs.RestApi.CnpjResponse.Root) =
-    member val Name = data.RazaoSocial
-    member val UpdatedAt = data.AtualizadoEm
+    member val Year: int = data.Ano
+    member val SupplierName: string = data.NomeFornecedor
+    member val SupplierCnpjOrCpf: string = data.CnpjCpfFornecedor
+    member val DocumentCode: int = data.CodDocumento
+    member val BatchCode: int = data.CodLote
+    member val DocumentDate: DateTime = data.DataDocumento
+    member val DocumentNumber: string = data.NumDocumento
+    member val ReimbursementNumber: string = data.NumRessarcimento
+    member val InstallmentNumber: int = data.Parcela
+    member val ExpenseType: string = data.TipoDespesa
+    member val DocumentType: string = data.TipoDocumento
+    member val DocumentTypeCode: int = data.CodTipoDocumento
+    member val DocumentValue: decimal = data.ValorDocumento
+    member val OverExpenseValue: int = data.ValorGlosa
+    member val NetValue: decimal = data.ValorLiquido
+
 type Legislature(data: RestAPI.LegislatureListResponse.Dado) =
-    member val Id = data.Id
-    member val Start = data.DataInicio
-    member val End = data.DataFim
+    member val Id: int = data.Id
+    member val Start: DateTime = data.DataInicio
+    member val End: DateTime = data.DataFim
 
-    member _.GetDeputies([<Parent>] legislature: Legislature) =
+    member _.GetDeputies([<Parent>] legislature: Legislature, limit: Nullable<int>, offset: Nullable<int>) =
+        let pagination =
+            RestAPI.pagination limit offset
+
+        let request =
+            { RestAPI.EmptyDeputyRequest with legislature = Some legislature.Id }
+
         task {
-            let! response = RestAPI.DeputyList (Nullable()) (null) (null) (null) (Nullable legislature.Id)
+            let! response = RestAPI.DeputyList request pagination
             return response |> Seq.map Deputy
         }
 
-type CamaraQuery() =
+type CamaraQuery(logger: ILogger<CamaraQuery>) =
     member _.Deputies(id: Nullable<int>, name: string, state: string, party: string, legislature: Nullable<int>) =
+        let request =
+            { RestAPI.EmptyDeputyRequest with
+                id = Option.ofNullable id
+                name = Option.ofObj name
+                state = Option.ofObj state
+                party = Option.ofObj party
+                legislature = Option.ofNullable legislature }
+
         task {
-            let! response = RestAPI.DeputyList id name state party legislature
-            return response |> Seq.map Deputy
+            logger.LogInformation("fetching deputies")
+            let! response = RestAPI.DeputyList request None
+            let deputies = response |> Seq.map Deputy
+            return deputies
         }
 
-    member _.Legislatures(id: Nullable<int>) =
+    member _.Legislatures(id: Nullable<int>, date: Nullable<DateTime>) =
         task {
-            let! response = RestAPI.Legislatures id
+            logger.LogInformation("fetching legislatures")
+            let! response = RestAPI.Legislatures id date
             return response |> Seq.map Legislature
         }

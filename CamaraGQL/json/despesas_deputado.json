@@ -1,23 +1,41 @@
 {
   "dados": [
     {
-      "ano": 23558423,
-      "cnpjCpfFornecedor": "laborum reprehenderit consectetur magna",
-      "codDocumento": -78076622,
-      "codLote": 42688630,
-      "codTipoDocumento": 34525328,
-      "dataDocumento": "commodo do veniam nisi",
-      "mes": -35339988,
-      "nomeFornecedor": "proident exercitation dolore ex",
-      "numDocumento": "commo",
-      "numRessarcimento": "cupidatat dolor",
-      "parcela": 25364678,
-      "tipoDespesa": "veniam irure sed amet ex",
-      "tipoDocumento": "aute",
-      "urlDocumento": "dolor pariatur",
-      "valorDocumento": 27579948.261222586,
-      "valorGlosa": -4566787.875514239,
-      "valorLiquido": -17212218.59413533
+      "ano": 2022,
+      "mes": 7,
+      "tipoDespesa": "MANUTENÇÃO DE ESCRITÓRIO DE APOIO À ATIVIDADE PARLAMENTAR",
+      "codDocumento": 7417035,
+      "tipoDocumento": "Nota Fiscal",
+      "codTipoDocumento": 0,
+      "dataDocumento": "2022-07-15",
+      "numDocumento": "Num Documento",
+      "valorDocumento": 132.07,
+      "urlDocumento": "https://www.camara.leg.br/cota-parlamentar/documentos/publ/3413/2022/7417035.pdf",
+      "nomeFornecedor": "SABESP - COMPANHIA DE SANEAMENTO BÁSICO DO ESTADO DE SÃO PAULO",
+      "cnpjCpfFornecedor": "DJsakjak",
+      "valorLiquido": 132.07,
+      "valorGlosa": 0,
+      "numRessarcimento": "String",
+      "codLote": 1869604,
+      "parcela": 0
+    }
+  ],
+  "links": [
+    {
+      "rel": "self",
+      "href": "https://dadosabertos.camara.leg.br/api/v2/deputados/204521/despesas?ano=2022&mes=7&itens=1&ordem=ASC&ordenarPor=ano"
+    },
+    {
+      "rel": "next",
+      "href": "https://dadosabertos.camara.leg.br/api/v2/deputados/204521/despesas?ano=2022&mes=7&ordem=ASC&ordenarPor=ano&pagina=2&itens=1"
+    },
+    {
+      "rel": "first",
+      "href": "https://dadosabertos.camara.leg.br/api/v2/deputados/204521/despesas?ano=2022&mes=7&ordem=ASC&ordenarPor=ano&pagina=1&itens=1"
+    },
+    {
+      "rel": "last",
+      "href": "https://dadosabertos.camara.leg.br/api/v2/deputados/204521/despesas?ano=2022&mes=7&ordem=ASC&ordenarPor=ano&pagina=36&itens=1"
     }
   ]
 }
