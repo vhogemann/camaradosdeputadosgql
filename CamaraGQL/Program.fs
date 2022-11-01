@@ -18,7 +18,7 @@ let main args =
     app.UseEndpoints( 
         fun endpoints -> endpoints.MapGraphQL() |> ignore ) |> ignore
 
-    app.Run() |> ignore
+    app.Run()
 
     0 // Exit code
 
