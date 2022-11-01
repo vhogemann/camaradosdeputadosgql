@@ -14,7 +14,11 @@ type Deputy(data: RestAPI.DeputyListResponse.Dado) =
     member _.GetDetails([<Parent>] deputy: Deputy) =
         task {
             let! response = RestAPI.DeputyDetails deputy.Id
-            return response.Dados |> DeputyDetails
+            return
+                match response with
+                | Ok details -> details.Dados |> DeputyDetails
+                | Error err ->
+                    raise (GraphQLException(err.Message))
         }
 
     member _.GetExpenses([<Parent>] deputy: Deputy, year, month) =
@@ -64,7 +68,11 @@ type Legislature(data: RestAPI.LegislatureListResponse.Dado) =
 
         task {
             let! response = RestAPI.DeputyList request pagination
-            return response |> Seq.map Deputy
+            return
+                match response with
+                | Ok deputies -> deputies |> Seq.map Deputy
+                | Error err -> raise(GraphQLException(err.Message))
+                
         }
 
 type CamaraQuery(logger: ILogger<CamaraQuery>) =
@@ -80,13 +88,22 @@ type CamaraQuery(logger: ILogger<CamaraQuery>) =
         task {
             logger.LogInformation("fetching deputies")
             let! response = RestAPI.DeputyList request None
-            let deputies = response |> Seq.map Deputy
-            return deputies
+            return
+                match response with
+                | Ok deputies -> deputies |> Seq.map Deputy
+                | Error err ->
+                    logger.LogError("Failed to fetch deputies", err)
+                    raise(GraphQLException(err.Message))
         }
 
     member _.Legislatures(id: Nullable<int>, date: Nullable<DateTime>) =
         task {
             logger.LogInformation("fetching legislatures")
             let! response = RestAPI.Legislatures id date
-            return response |> Seq.map Legislature
+            return
+                match response with
+                | Ok legislatures -> legislatures |> Seq.map Legislature
+                | Error err ->
+                    logger.LogError("Failed to fetch legislatures", err)
+                    raise (GraphQLException(err.Message))
         }

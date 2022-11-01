@@ -13,7 +13,6 @@ let baseUrl =
 
 // ?id=&nome=&idLegislatura=-37226838&idLegislatura=20933510&siglaUf=velit Ut elit&siglaUf=esse ipsum ullamco voluptate&siglaPartido=velit Ut elit&siglaPartido=esse ipsum ullamco voluptate&siglaSexo=nulla sunt Lorem magna&pagina=41719264&itens=41719264&dataInicio=nulla sunt Lorem magna&dataFim=nulla sunt Lorem magna&ordem=ASC&ordenarPor=nome
 
-
 type DeputyRequest =
     { id: int option
       name: string option
@@ -82,24 +81,30 @@ let DeputyList (request: DeputyRequest) (pagination: Pagination option) =
 
         let! response =
             Http.AsyncRequestString($"{baseUrl}/deputados", query)
-            |> Async.StartAsTask
+            |> Async.Catch
 
-        let deputyList =
-            response |> DeputyListResponse.Parse
-
-        return deputyList.Dados
+        return
+            match response with
+            | Choice1Of2 payload ->
+                let deputyList =
+                    payload |> DeputyListResponse.Parse
+                deputyList.Dados |> Ok
+            | Choice2Of2 error -> Error error
     }
 
 let DeputyDetails (id: int) =
     task {
         let! response =
             Http.AsyncRequestString($"{baseUrl}/deputados/{id}")
-            |> Async.StartAsTask
+            |> Async.Catch
 
-        let deputy =
-            response |> DeputyDetailsResponse.Parse
-
-        return deputy
+        return
+            match response with
+            | Choice1Of2 payload ->
+                let deputy =
+                    payload |> DeputyDetailsResponse.Parse
+                Ok deputy
+            | Choice2Of2 error -> Error error
     }
 
 
@@ -123,22 +128,28 @@ let DeputyExpenses (id: int) (year) (month) =
         task {
             let! response =
                 match query with
-                | Some q -> Http.AsyncRequestString(uri, q)
-                | None -> Http.AsyncRequestString uri
+                | Some q -> Http.AsyncRequestString(uri, q) |> Async.Catch
+                | None -> Http.AsyncRequestString uri |> Async.Catch
+            match response with
+            | Choice1Of2 payload ->
+                let expenses =
+                    payload |> DeputyExpenseResponse.Parse
 
-            let expenses =
-                response |> DeputyExpenseResponse.Parse
+                let data = expenses.Dados |> Seq.append acc
 
-            let data = expenses.Dados |> Seq.append acc
-
-            match getNext expenses with
-            | Some next -> return! fetch next None data
-            | None -> return data
+                match getNext expenses with
+                | Some next ->
+                    return! fetch next None data
+                | None ->
+                    return Ok data
+            | Choice2Of2 error -> return Error error
         }
 
     task {
         let! expenses = fetch $"{baseUrl}/deputados/{id}/despesas" (Some query) Seq.empty
-        return expenses |> Seq.toArray
+        return
+            expenses
+            |> Result.map Seq.toArray
     }
 
 let Legislatures (id: Nullable<int>) (date: Nullable<DateTime>) =
@@ -153,10 +164,16 @@ let Legislatures (id: Nullable<int>) (date: Nullable<DateTime>) =
             }
             |> Seq.toList
 
-        let! response = Http.AsyncRequestString($"{baseUrl}/legislaturas", query)
+        let! response =
+            Http.AsyncRequestString($"{baseUrl}/legislaturas", query)
+            |> Async.Catch
 
-        let legislatures =
-            response |> LegislatureListResponse.Parse
+        return
+            match response with
+            | Choice1Of2 payload ->
+                let legislatures =
+                    payload |> LegislatureListResponse.Parse
 
-        return legislatures.Dados
+                legislatures.Dados |> Ok
+            | Choice2Of2 error -> Error error
     }
