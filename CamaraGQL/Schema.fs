@@ -24,7 +24,11 @@ type Deputy(data: RestAPI.DeputyListResponse.Dado) =
     member _.GetExpenses([<Parent>] deputy: Deputy, year, month) =
         task {
             let! response = RestAPI.DeputyExpenses deputy.Id year month
-            return response |> Seq.map DeputyExpenses |> Seq.toArray
+            return
+                match response with
+                | Ok expenses ->
+                    expenses |> Seq.map DeputyExpenses |> Seq.toArray
+                | Error err -> raise (GraphQLException(err.Message))
         }
 
 and DeputyDetails(data: RestAPI.DeputyDetailsResponse.Dados) =
