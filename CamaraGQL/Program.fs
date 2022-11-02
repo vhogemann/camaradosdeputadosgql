@@ -2,11 +2,9 @@ open System
 open Microsoft.AspNetCore.Builder
 open Microsoft.Extensions.Hosting
 open Microsoft.Extensions.DependencyInjection
-open Serilog
 
 [<EntryPoint>]
 let main args =
-    let logger = LoggerConfiguration().WriteTo.Console().CreateLogger()
     let builder = WebApplication.CreateBuilder(args)
     builder.Services
         .AddGraphQLServer()
