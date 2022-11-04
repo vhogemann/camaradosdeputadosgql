@@ -2,10 +2,11 @@ module Camara.RestAPI
 
 open System
 open FSharp.Data
+open Microsoft.Extensions.Logging
 
 type DeputyListResponse = JsonProvider<"json/deputados.json">
 type DeputyDetailsResponse = JsonProvider<"json/detalhes_deputado.json">
-type DeputyExpenseResponse = JsonProvider<"json/despesas_deputado.json">
+type DeputyExpenseResponse = JsonProvider<"json/despesas_deputado.json", InferTypesFromValues=false>
 type LegislatureListResponse = JsonProvider<"json/legislaturas.json">
 
 let baseUrl =
@@ -71,7 +72,7 @@ let deputyRequestToQuery (request: DeputyRequest) =
     }
     |> Seq.choose id
 
-let DeputyList (request: DeputyRequest) (pagination: Pagination option) =
+let DeputyList (logger: ILogger) (request: DeputyRequest) (pagination: Pagination option) =
     task {
         let query =
             request
@@ -89,10 +90,12 @@ let DeputyList (request: DeputyRequest) (pagination: Pagination option) =
                 let deputyList =
                     payload |> DeputyListResponse.Parse
                 deputyList.Dados |> Ok
-            | Choice2Of2 error -> Error error
+            | Choice2Of2 error ->
+                logger.LogError("failed to fetch deputies", error)
+                Error error
     }
 
-let DeputyDetails (id: int) =
+let DeputyDetails (logger: ILogger) (id: int) =
     task {
         let! response =
             Http.AsyncRequestString($"{baseUrl}/deputados/{id}")
@@ -104,15 +107,18 @@ let DeputyDetails (id: int) =
                 let deputy =
                     payload |> DeputyDetailsResponse.Parse
                 Ok deputy
-            | Choice2Of2 error -> Error error
+            | Choice2Of2 error ->
+                logger.LogError ("Failed to fetch deputy details", error)
+                Error error
     }
 
 
-let DeputyExpenses (id: int) (year) (month) =
+let DeputyExpenses (logger: ILogger) (id: int) (year) (month) =
     let query =
         seq {
             if year <> null then yield "ano", year
             if month <> null then yield "mes", month
+            yield "itens", "100"
         }
         |> Seq.toList
 
@@ -139,10 +145,14 @@ let DeputyExpenses (id: int) (year) (month) =
 
                 match getNext expenses with
                 | Some next ->
+                    logger.LogInformation("Fetching next expenses page")
                     return! fetch next None data
                 | None ->
+                    logger.LogInformation("All expenses loaded")
                     return Ok data
-            | Choice2Of2 error -> return Error error
+            | Choice2Of2 error ->
+                logger.LogError("Failed to fetch expenses", error)
+                return Error error
         }
 
     task {

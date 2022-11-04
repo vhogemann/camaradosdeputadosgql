@@ -4,7 +4,7 @@ open System
 open HotChocolate
 open Microsoft.Extensions.Logging
 
-type Deputy(data: RestAPI.DeputyListResponse.Dado) =
+type Deputy(logger: ILogger, data: RestAPI.DeputyListResponse.Dado) =
     member val Id: int = data.Id
     member val Name: string = data.Nome
     member val State: string = data.SiglaUf
@@ -13,22 +13,35 @@ type Deputy(data: RestAPI.DeputyListResponse.Dado) =
 
     member _.GetDetails([<Parent>] deputy: Deputy) =
         task {
-            let! response = RestAPI.DeputyDetails deputy.Id
+            let! response = RestAPI.DeputyDetails logger deputy.Id
             return
                 match response with
                 | Ok details -> details.Dados |> DeputyDetails
                 | Error err ->
+                    logger.LogError("Failed to fetch deputy details", err)
                     raise (GraphQLException(err.Message))
         }
 
     member _.GetExpenses([<Parent>] deputy: Deputy, year, month) =
         task {
-            let! response = RestAPI.DeputyExpenses deputy.Id year month
+            let! response = RestAPI.DeputyExpenses logger deputy.Id year month
             return
                 match response with
                 | Ok expenses ->
-                    expenses |> Seq.map DeputyExpenses |> Seq.toArray
-                | Error err -> raise (GraphQLException(err.Message))
+                    expenses
+                    |> Seq.map (fun expense ->
+                        try
+                            Some (DeputyExpenses(expense))
+                        with
+                        | error ->
+                            logger.LogError("Failed to initialize expense", error)
+                            logger.LogDebug $"%A{expense}"
+                            None)
+                    |> Seq.choose id
+                    |> Seq.toArray
+                | Error err ->
+                    logger.LogError("Failed to fetch expenses", err)
+                    raise (GraphQLException(err.Message))
         }
 
 and DeputyDetails(data: RestAPI.DeputyDetailsResponse.Dados) =
@@ -42,23 +55,28 @@ and DeputyDetails(data: RestAPI.DeputyDetailsResponse.Dados) =
     member val SocialNetworks: string [] = data.RedeSocial
 
 and DeputyExpenses(data: RestAPI.DeputyExpenseResponse.Dado) =
-    member val Year: int = data.Ano
+    member val Year: decimal = data.Ano
+    member val Month: decimal = data.Mes
     member val SupplierName: string = data.NomeFornecedor
     member val SupplierCnpjOrCpf: string = data.CnpjCpfFornecedor
-    member val DocumentCode: int = data.CodDocumento
-    member val BatchCode: int = data.CodLote
-    member val DocumentDate: DateTime = data.DataDocumento
+    member val DocumentCode: decimal = data.CodDocumento
+    member val BatchCode: decimal = data.CodLote
+    member val DocumentDate: Nullable<DateTime> =
+        if data.DataDocumento <> null then
+            DateTime.Parse(data.DataDocumento) |> Nullable
+        else
+            Nullable()
     member val DocumentNumber: string = data.NumDocumento
     member val ReimbursementNumber: string = data.NumRessarcimento
-    member val InstallmentNumber: int = data.Parcela
+    member val InstallmentNumber: decimal = data.Parcela
     member val ExpenseType: string = data.TipoDespesa
     member val DocumentType: string = data.TipoDocumento
-    member val DocumentTypeCode: int = data.CodTipoDocumento
+    member val DocumentTypeCode: decimal = data.CodTipoDocumento
     member val DocumentValue: decimal = data.ValorDocumento
-    member val OverExpenseValue: int = data.ValorGlosa
+    member val OverExpenseValue: decimal = data.ValorGlosa
     member val NetValue: decimal = data.ValorLiquido
 
-type Legislature(data: RestAPI.LegislatureListResponse.Dado) =
+type Legislature(logger: ILogger, data: RestAPI.LegislatureListResponse.Dado) =
     member val Id: int = data.Id
     member val Start: DateTime = data.DataInicio
     member val End: DateTime = data.DataFim
@@ -71,10 +89,10 @@ type Legislature(data: RestAPI.LegislatureListResponse.Dado) =
             { RestAPI.EmptyDeputyRequest with legislature = Some legislature.Id }
 
         task {
-            let! response = RestAPI.DeputyList request pagination
+            let! response = RestAPI.DeputyList logger request pagination
             return
                 match response with
-                | Ok deputies -> deputies |> Seq.map Deputy
+                | Ok deputies -> deputies |> Seq.map ( fun deputy -> Deputy(logger, deputy))
                 | Error err -> raise(GraphQLException(err.Message))
                 
         }
@@ -91,10 +109,10 @@ type CamaraQuery(logger: ILogger<CamaraQuery>) =
 
         task {
             logger.LogInformation("fetching deputies")
-            let! response = RestAPI.DeputyList request None
+            let! response = RestAPI.DeputyList logger request None
             return
                 match response with
-                | Ok deputies -> deputies |> Seq.map Deputy
+                | Ok deputies -> deputies |> Seq.map (fun deputy -> Deputy(logger, deputy))
                 | Error err ->
                     logger.LogError("Failed to fetch deputies", err)
                     raise(GraphQLException(err.Message))
@@ -106,7 +124,7 @@ type CamaraQuery(logger: ILogger<CamaraQuery>) =
             let! response = RestAPI.Legislatures id date
             return
                 match response with
-                | Ok legislatures -> legislatures |> Seq.map Legislature
+                | Ok legislatures -> legislatures |> Seq.map (fun legislature -> Legislature(logger, legislature))
                 | Error err ->
                     logger.LogError("Failed to fetch legislatures", err)
                     raise (GraphQLException(err.Message))
