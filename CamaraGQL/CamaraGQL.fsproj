@@ -4,16 +4,16 @@
     <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="CamaraClient.fs" />
-    <Compile Include="Schema.fs" />
-    <Compile Include="Program.fs" />
-  </ItemGroup>
-  <ItemGroup>
     <PackageReference Include="FSharp.Data" Version="4.2.8" />
     <PackageReference Include="HotChocolate.AspNetCore" Version="12.9.0" />
   </ItemGroup>
   <ItemGroup>
     <Content Include=".dockerignore" />
     <Content Include="Dockerfile" />
+    <Compile Include="DadosAbertosCamaraClient\Model.fs" />
+    <Compile Include="DadosAbertosCamaraClient\Deputy.fs" />
+    <Compile Include="DadosAbertosCamaraClient\Legislature.fs" />
+    <Compile Include="Schema.fs" />
+    <Compile Include="Program.fs" />
   </ItemGroup>
 </Project>
