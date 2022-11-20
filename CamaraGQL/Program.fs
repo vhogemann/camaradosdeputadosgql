@@ -2,11 +2,16 @@ open System
 open Microsoft.AspNetCore.Builder
 open Microsoft.Extensions.Hosting
 open Microsoft.Extensions.DependencyInjection
+open Microsoft.Extensions.Logging
 
 [<EntryPoint>]
 let main args =
     let builder = WebApplication.CreateBuilder(args)
+    let baseUrl = builder.Configuration["CamaraRestAPI:baseUrl"]
     builder.Services
+        .AddSingleton<Camara.RestAPI.IClient>( fun ctx ->
+            let logger = ctx.GetService<ILogger>()
+            Camara.RestAPI.Client(logger, baseUrl) :> Camara.RestAPI.IClient)
         .AddGraphQLServer()
             .AddQueryType<Camara.Schema.CamaraQuery>()
             |> ignore

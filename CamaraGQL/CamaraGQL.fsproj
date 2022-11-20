@@ -13,6 +13,7 @@
     <Compile Include="DadosAbertosCamaraClient\Model.fs" />
     <Compile Include="DadosAbertosCamaraClient\Deputy.fs" />
     <Compile Include="DadosAbertosCamaraClient\Legislature.fs" />
+    <Compile Include="DadosAbertosCamaraClient\Client.fs" />
     <Compile Include="Schema.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
