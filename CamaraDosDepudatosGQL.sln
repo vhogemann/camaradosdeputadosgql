@@ -5,6 +5,8 @@ VisualStudioVersion = 16.0.30114.105
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "CamaraGQL", "CamaraGQL\CamaraGQL.fsproj", "{56CC4356-78EC-436E-9CD8-78404E80DB11}"
 EndProject
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "CamaraGQL.Test", "CamaraGQL.Test\CamaraGQL.Test.fsproj", "{71AD9561-537A-4D56-BA5F-21AFCDE2618C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -18,5 +20,9 @@ Global
 		{56CC4356-78EC-436E-9CD8-78404E80DB11}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{56CC4356-78EC-436E-9CD8-78404E80DB11}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{56CC4356-78EC-436E-9CD8-78404E80DB11}.Release|Any CPU.Build.0 = Release|Any CPU
+		{71AD9561-537A-4D56-BA5F-21AFCDE2618C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{71AD9561-537A-4D56-BA5F-21AFCDE2618C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{71AD9561-537A-4D56-BA5F-21AFCDE2618C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{71AD9561-537A-4D56-BA5F-21AFCDE2618C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
