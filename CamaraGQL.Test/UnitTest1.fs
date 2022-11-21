@@ -1,11 +1,13 @@
-module CamaraGQL.Test
-
+namespace CamaraGQL.Test
+open CamaraGQL.Test.Util
 open NUnit.Framework
 
-[<SetUp>]
-let Setup () =
-    ()
+module Client = 
+    [<SetUp>]
+    let Setup () =
+        ()
 
-[<Test>]
-let Test1 () =
-    Assert.Pass()
+    [<Test>]
+    let Test1 () =
+        let port = RandomPort.next()
+        Assert.Pass()
