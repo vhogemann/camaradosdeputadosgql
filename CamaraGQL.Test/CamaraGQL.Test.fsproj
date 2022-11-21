@@ -9,6 +9,7 @@
 
     <ItemGroup>
         <Compile Include="Util.fs" />
+        <Compile Include="CamaraApiMock.fs" />
         <Compile Include="UnitTest1.fs" />
         <Compile Include="Program.fs" />
     </ItemGroup>
@@ -19,6 +20,7 @@
         <PackageReference Include="NUnit3TestAdapter" Version="4.2.1" />
         <PackageReference Include="NUnit.Analyzers" Version="3.3.0" />
         <PackageReference Include="coverlet.collector" Version="3.1.2" />
+        <PackageReference Include="rest-mock-core" Version="0.7.12" />
     </ItemGroup>
 
     <ItemGroup>
