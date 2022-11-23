@@ -3,7 +3,8 @@ module Camara.RestAPI.Deputy
 open FSharp.Data
 open Camara.RestAPI.Model
 open Microsoft.Extensions.Logging
-
+open System.Text.Json
+open Camara.RestAPI.Serialization
 type DeputyRequest =
     { id: int option
       name: string option
@@ -53,10 +54,8 @@ let DeputyList (logger: ILogger) (baseUrl: string) (request: DeputyRequest) (pag
         return
             match response with
             | Choice1Of2 payload ->
-                let deputyList =
-                    payload |> DeputyListResponse.Parse
-
-                deputyList.Dados |> Ok
+                let deputyList = JsonSerializer.Deserialize<DeputadoResponse>(payload)
+                deputyList.dados |> Ok
             | Choice2Of2 error ->
                 logger.LogError("failed to fetch deputies", error)
                 Error error
@@ -71,10 +70,10 @@ let DeputyDetails (logger: ILogger) (baseUrl: string) (id: int) =
         return
             match response with
             | Choice1Of2 payload ->
-                let deputy =
-                    payload |> DeputyDetailsResponse.Parse
+                let deputy:DetalhesDeputadoResponse =
+                    payload |> deserialize
 
-                Ok deputy
+                Ok deputy.dados
             | Choice2Of2 error ->
                 logger.LogError("Failed to fetch deputy details", error)
                 Error error
@@ -96,15 +95,15 @@ let DeputyExpenses (logger: ILogger) (baseUrl: string) (request: DeputyExpensesR
         |> Seq.choose id
         |> Seq.toList
 
-    let getNext (exp: DeputyExpenseResponse.Root) =
-        exp.Links
+    let getNext (exp: DespesaResponse) =
+        exp.links
         |> Seq.tryFind (fun it ->
-            match it.Rel with
-            | "next" -> it.Href <> null && it.Href.Length > 0
+            match it.rel with
+            | "next" -> it.href <> null && it.href.Length > 0
             | _ -> false)
-        |> Option.map (fun it -> it.Href)
+        |> Option.map (fun it -> it.href)
 
-    let rec fetch uri query (acc: DeputyExpenseResponse.Dado seq) =
+    let rec fetch uri query (acc: Despesa seq) =
         task {
             let! response =
                 match query with
@@ -113,10 +112,10 @@ let DeputyExpenses (logger: ILogger) (baseUrl: string) (request: DeputyExpensesR
 
             match response with
             | Choice1Of2 payload ->
-                let expenses =
-                    payload |> DeputyExpenseResponse.Parse
+                let expenses:DespesaResponse =
+                    payload |> deserialize
 
-                let data = expenses.Dados |> Seq.append acc
+                let data = expenses.dados |> Seq.append acc
 
                 match getNext expenses with
                 | Some next ->

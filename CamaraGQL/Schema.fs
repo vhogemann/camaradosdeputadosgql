@@ -4,12 +4,13 @@ open System
 open HotChocolate
 open Microsoft.Extensions.Logging
 
-type Deputy(logger: ILogger, client: RestAPI.IClient, data: RestAPI.Model.DeputyListResponse.Dado) =
-    member val Id: int = data.Id
-    member val Name: string = data.Nome
-    member val State: string = data.SiglaUf
-    member val Party: string = data.SiglaPartido
-    member val Picture: string = data.UrlFoto
+type Deputy(logger: ILogger, client: RestAPI.IClient, data: RestAPI.Model.Deputado) =
+    member val Id: int = data.id
+    member val Name: string = data.nome
+    member val State: string = data.siglaUf
+    member val Party: string = data.siglaPartido
+    member val Picture: string = data.urlFoto
+    member val  Source: RestAPI.Model.Deputado = data
 
     member _.GetDetails([<Parent>] deputy: Deputy) =
         task {
@@ -17,7 +18,7 @@ type Deputy(logger: ILogger, client: RestAPI.IClient, data: RestAPI.Model.Deputy
 
             return
                 match response with
-                | Ok details -> details.Dados |> DeputyDetails
+                | Ok details -> details |> DeputyDetails
                 | Error err ->
                     logger.LogError("Failed to fetch deputy details", err)
                     raise (GraphQLException(err.Message))
@@ -50,39 +51,35 @@ type Deputy(logger: ILogger, client: RestAPI.IClient, data: RestAPI.Model.Deputy
                     raise (GraphQLException(err.Message))
         }
 
-and DeputyDetails(data: RestAPI.Model.DeputyDetailsResponse.Dados) =
-    member val Id: int = data.Id
-    member val FullName: string = data.NomeCivil
-    member val Cpf: string = data.Cpf
-    member val Education: string = data.Escolaridade
-    member val Gender: string = data.Sexo
-    member val BirthDate: string = data.DataNascimento
-    member val DeathDate: string = data.DataFalecimento
-    member val SocialNetworks: string [] = data.RedeSocial
+and DeputyDetails(data: RestAPI.Model.DetalhesDeputado) =
+    member val Id: int = data.id
+    member val FullName: string = data.nomeCivil
+    member val Cpf: string = data.cpf
+    member val Education: string = data.escolaridade
+    member val Gender: string = data.sexo
+    member val BirthDate: string = data.dataNascimento
+    member val DeathDate: string = data.dataFalecimento
+    member val SocialNetworks: string [] = data.redeSocial
+    member val Source: RestAPI.Model.DetalhesDeputado = data
 
-and DeputyExpenses(data: RestAPI.Model.DeputyExpenseResponse.Dado) =
-    member val Year: decimal = data.Ano
-    member val Month: decimal = data.Mes
-    member val SupplierName: string = data.NomeFornecedor
-    member val SupplierCnpjOrCpf: string = data.CnpjCpfFornecedor
-    member val DocumentCode: decimal = data.CodDocumento
-    member val BatchCode: decimal = data.CodLote
-
-    member val DocumentDate: Nullable<DateTime> =
-        if data.DataDocumento <> null then
-            DateTime.Parse(data.DataDocumento) |> Nullable
-        else
-            Nullable()
-
-    member val DocumentNumber: string = data.NumDocumento
-    member val ReimbursementNumber: string = data.NumRessarcimento
-    member val InstallmentNumber: decimal = data.Parcela
-    member val ExpenseType: string = data.TipoDespesa
-    member val DocumentType: string = data.TipoDocumento
-    member val DocumentTypeCode: decimal = data.CodTipoDocumento
-    member val DocumentValue: decimal = data.ValorDocumento
-    member val OverExpenseValue: decimal = data.ValorGlosa
-    member val NetValue: decimal = data.ValorLiquido
+and DeputyExpenses(data: RestAPI.Model.Despesa) =
+    member val Year: decimal = data.ano
+    member val Month: decimal = data.mes
+    member val SupplierName: string = data.nomeFornecedor
+    member val SupplierCnpjOrCpf: string = data.cnpjCpfFornecedor
+    member val DocumentCode: decimal = data.codDocumento
+    member val BatchCode: decimal = data.codLote
+    member val Source: RestAPI.Model.Despesa = data
+    member val DocumentDate: Nullable<DateTime> = data.dataDocumento |> Option.toNullable
+    member val DocumentNumber: string = data.numDocumento
+    member val ReimbursementNumber: string = data.numRessarcimento
+    member val InstallmentNumber: decimal = data.parcela
+    member val ExpenseType: string = data.tipoDespesa
+    member val DocumentType: string = data.tipoDocumento
+    member val DocumentTypeCode: decimal = data.codTipoDocumento
+    member val DocumentValue: decimal = data.valorDocumento
+    member val OverExpenseValue: decimal = data.valorGlosa
+    member val NetValue: decimal = data.valorLiquido
 
 type Legislature(logger: ILogger, client: RestAPI.IClient, data: RestAPI.Model.LegislatureListResponse.Dado) =
     member val Id: int = data.Id

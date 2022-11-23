@@ -8,11 +8,11 @@ open Microsoft.Extensions.Logging
 
 type IClient =
     abstract member DeputyList:
-        DeputyRequest * Pagination option -> Task<Result<DeputyListResponse.Dado [], exn>>
+        DeputyRequest * Pagination option -> Task<Result<Deputado[], exn>>
     abstract member DeputyDetails:
-        int -> Task<Result<DeputyDetailsResponse.Root, exn>>
+        int -> Task<Result<DetalhesDeputado, exn>>
     abstract member DeputyExpenses:
-        DeputyExpensesRequest -> Task<Result<DeputyExpenseResponse.Dado [], exn>>
+        DeputyExpensesRequest -> Task<Result<Despesa[], exn>>
 
     abstract member LegislatureList:
         LegislatureRequest * Pagination option -> Task<Result<LegislatureListResponse.Dado [], exn>>
