@@ -91,7 +91,16 @@ module Model =
           telefone: string }
 
     type DetalhesDeputadoResponse = Envelope<DetalhesDeputado>
-    type LegislatureListResponse = JsonProvider<"json/legislaturas.json">
+    
+    [<ReferenceEquality>]
+    type Legislatura = {
+        id: int
+        uri: string
+        dataInicio: DateTime
+        dataFim: DateTime
+    }
+    
+    type LegislaturaResponse = Envelope<Legislatura[]>
 
     type Pagination = { offset: int; limit: int }
 

@@ -3,6 +3,7 @@
 open System
 open FSharp.Data
 open Camara.RestAPI.Model
+open Camara.RestAPI.Serialization
 open Microsoft.Extensions.Logging
 
 type LegislatureRequest =
@@ -37,10 +38,10 @@ let LegislatureList (logger: ILogger) (baseUrl: string) (request: LegislatureReq
         return
             match response with
             | Choice1Of2 payload ->
-                let legislatures =
-                    payload |> LegislatureListResponse.Parse
+                let legislatures:LegislaturaResponse =
+                    payload |> deserialize
 
-                legislatures.Dados |> Ok
+                legislatures.dados |> Ok
             | Choice2Of2 error ->
                 logger.LogError("Failed to fetch legislatures", error)
                 Error error

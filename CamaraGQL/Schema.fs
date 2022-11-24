@@ -10,7 +10,6 @@ type Deputy(logger: ILogger, client: RestAPI.IClient, data: RestAPI.Model.Deputa
     member val State: string = data.siglaUf
     member val Party: string = data.siglaPartido
     member val Picture: string = data.urlFoto
-    member val  Source: RestAPI.Model.Deputado = data
 
     member _.GetDetails([<Parent>] deputy: Deputy) =
         task {
@@ -60,7 +59,6 @@ and DeputyDetails(data: RestAPI.Model.DetalhesDeputado) =
     member val BirthDate: string = data.dataNascimento
     member val DeathDate: string = data.dataFalecimento
     member val SocialNetworks: string [] = data.redeSocial
-    member val Source: RestAPI.Model.DetalhesDeputado = data
 
 and DeputyExpenses(data: RestAPI.Model.Despesa) =
     member val Year: decimal = data.ano
@@ -69,7 +67,6 @@ and DeputyExpenses(data: RestAPI.Model.Despesa) =
     member val SupplierCnpjOrCpf: string = data.cnpjCpfFornecedor
     member val DocumentCode: decimal = data.codDocumento
     member val BatchCode: decimal = data.codLote
-    member val Source: RestAPI.Model.Despesa = data
     member val DocumentDate: Nullable<DateTime> = data.dataDocumento |> Option.toNullable
     member val DocumentNumber: string = data.numDocumento
     member val ReimbursementNumber: string = data.numRessarcimento
@@ -81,10 +78,10 @@ and DeputyExpenses(data: RestAPI.Model.Despesa) =
     member val OverExpenseValue: decimal = data.valorGlosa
     member val NetValue: decimal = data.valorLiquido
 
-type Legislature(logger: ILogger, client: RestAPI.IClient, data: RestAPI.Model.LegislatureListResponse.Dado) =
-    member val Id: int = data.Id
-    member val Start: DateTime = data.DataInicio
-    member val End: DateTime = data.DataFim
+type Legislature(logger: ILogger, client: RestAPI.IClient, data: RestAPI.Model.Legislatura) =
+    member val Id: int = data.id
+    member val Start: DateTime = data.dataInicio
+    member val End: DateTime = data.dataFim
 
     member _.GetDeputies([<Parent>] legislature: Legislature, limit: Nullable<int>, offset: Nullable<int>) =
         let pagination =

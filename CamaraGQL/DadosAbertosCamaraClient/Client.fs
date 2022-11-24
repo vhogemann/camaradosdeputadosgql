@@ -15,7 +15,7 @@ type IClient =
         DeputyExpensesRequest -> Task<Result<Despesa[], exn>>
 
     abstract member LegislatureList:
-        LegislatureRequest * Pagination option -> Task<Result<LegislatureListResponse.Dado [], exn>>
+        LegislatureRequest * Pagination option -> Task<Result<Legislatura [], exn>>
 
 type Client(logger: ILogger, baseUrl: string) =
     interface IClient with
