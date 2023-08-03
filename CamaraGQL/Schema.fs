@@ -89,12 +89,17 @@ type Legislature(logger: ILogger, client: RestAPI.IClient, data: RestAPI.Model.L
     member val Start: DateTime = data.DataInicio
     member val End: DateTime = data.DataFim
 
-    member _.GetDeputies([<Parent>] legislature: Legislature, limit: Nullable<int>, offset: Nullable<int>) =
+    member _.GetDeputies([<Parent>] legislature: Legislature, id: Nullable<int>, name: string, state: string, party: string, limit: Nullable<int>, offset: Nullable<int>) =
         let pagination =
             RestAPI.Model.pagination limit offset
 
         let request =
-            { RestAPI.Deputy.EmptyDeputyRequest with legislature = Some legislature.Id }
+            { RestAPI.Deputy.EmptyDeputyRequest with 
+                legislature = Some legislature.Id
+                id = Option.ofNullable id
+                name = Option.ofObj name
+                state = Option.ofObj state
+                party = Option.ofObj party }
 
         task {
             let! response = client.DeputyList(request, pagination)
