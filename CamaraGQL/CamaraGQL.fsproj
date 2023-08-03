@@ -1,11 +1,13 @@
 <Project Sdk="Microsoft.NET.Sdk.Web">
   <PropertyGroup>
-    <TargetFramework>net6.0</TargetFramework>
+    <TargetFramework>net7.0</TargetFramework>
     <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+    <UserSecretsId>f3f4d7f4-00cb-4572-806c-4fb689468464</UserSecretsId>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="FSharp.Data" Version="4.2.8" />
     <PackageReference Include="HotChocolate.AspNetCore" Version="12.9.0" />
+    <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.18.1" />
   </ItemGroup>
   <ItemGroup>
     <Content Include=".dockerignore" />

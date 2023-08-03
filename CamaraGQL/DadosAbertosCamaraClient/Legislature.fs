@@ -31,7 +31,11 @@ let LegislatureList (logger: ILogger) (baseUrl: string) (request: LegislatureReq
             |> Seq.toList
 
         let! response =
-            Http.AsyncRequestString($"{baseUrl}/legislaturas", query)
+            Http.AsyncRequestString(
+                $"{baseUrl}/legislaturas", 
+                httpMethod = "GET",
+                query = query,
+                headers = ["Accept", "application/json"])
             |> Async.Catch
 
         return
