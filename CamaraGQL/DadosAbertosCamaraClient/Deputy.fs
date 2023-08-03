@@ -47,7 +47,11 @@ let DeputyList (logger: ILogger) (baseUrl: string) (request: DeputyRequest) (pag
             |> Seq.toList
 
         let! response =
-            Http.AsyncRequestString($"{baseUrl}/deputados", query)
+            Http.AsyncRequestString(
+                $"{baseUrl}/deputados", 
+                httpMethod = "GET",
+                query = query, 
+                headers = ["Accept", "application/json"])
             |> Async.Catch
 
         return
@@ -65,7 +69,10 @@ let DeputyList (logger: ILogger) (baseUrl: string) (request: DeputyRequest) (pag
 let DeputyDetails (logger: ILogger) (baseUrl: string) (id: int) =
     task {
         let! response =
-            Http.AsyncRequestString($"{baseUrl}/deputados/{id}")
+            Http.AsyncRequestString(
+                $"{baseUrl}/deputados/{id}",
+                httpMethod = "GET",
+                headers = ["Accept", "application/json"])
             |> Async.Catch
 
         return
@@ -108,8 +115,8 @@ let DeputyExpenses (logger: ILogger) (baseUrl: string) (request: DeputyExpensesR
         task {
             let! response =
                 match query with
-                | Some q -> Http.AsyncRequestString(uri, q) |> Async.Catch
-                | None -> Http.AsyncRequestString uri |> Async.Catch
+                | Some q -> Http.AsyncRequestString(uri, httpMethod = "GET", query = q, headers = ["Accept", "application/json"]) |> Async.Catch
+                | None -> Http.AsyncRequestString(uri, headers = ["Accept", "application/json"]) |> Async.Catch
 
             match response with
             | Choice1Of2 payload ->
