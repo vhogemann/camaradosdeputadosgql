@@ -41,7 +41,7 @@ type Deputy(logger: ILogger, client: RestAPI.IClient, data: RestAPI.Model.Deputy
                         with
                         | error ->
                             logger.LogError("Failed to initialize expense", error)
-                            logger.LogDebug $"%A{expense}"
+                            logger.LogError $"%A{expense}"
                             None)
                     |> Seq.choose id
                     |> Seq.toArray
@@ -70,7 +70,12 @@ and DeputyExpenses(data: RestAPI.Model.DeputyExpenseResponse.Dado) =
 
     member val DocumentDate: Nullable<DateTime> =
         if data.DataDocumento <> null then
-            DateTime.Parse(data.DataDocumento) |> Nullable
+            if data.DataDocumento.Length > 0 then
+                DateTime.Parse(data.DataDocumento) |> Nullable
+            else
+                let year = data.Ano |> int
+                let month = data.Mes |> int
+                DateTime(year, month, 1) |> Nullable
         else
             Nullable()
 
